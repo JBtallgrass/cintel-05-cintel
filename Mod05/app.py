@@ -8,10 +8,12 @@ from datetime import datetime
 from collections import deque
 import pandas as pd
 import plotly.express as px
-from shinywidgets import render_plotly
+from shinywidgets import render_plotly, render_widget
 from scipy import stats
 from dotenv import load_dotenv
 import os
+import requests
+from ipyleaflet import Map 
 
 #---------------------------------------------
 # PROJECT ENHANCEMENTS- Using AI Asst to explore and discover
@@ -39,7 +41,13 @@ from faicons import icon_svg
 # --------------------------------------------
 # Shiny EXPRESS VERSION
 # --------------------------------------------
+from ipyleaflet import Map  
 
+ui.h2("An ipyleaflet Map")
+
+@render_widget  
+def map():
+    return Map(center=(39.0997, -94.5786), zoom=10)
 # --------------------------------------------
 # First, set a constant UPDATE INTERVAL for all live data
 # Constants are usually defined in uppercase letters
