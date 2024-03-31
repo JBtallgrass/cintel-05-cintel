@@ -1,187 +1,108 @@
-import plotly.express as px
-from shiny.express import input, ui
-from shiny import render
-from shinywidgets import render_plotly
-import pandas as pd
-import seaborn as sns
-import palmerpenguins  # This package provides the Palmer Penguins dataset
-from shiny import reactive
-import matplotlib.pyplot as plt
-
-# built-in function to load the Palmer Penguins dataset
-penguins_df = palmerpenguins.load_penguins()
-
-# Page name
-ui.page_opts(title="JB Penguins Data", fillable=True)
-
-color_map = {"Adelie": "blue", "Gentoo": "green", "Chinstrap": "red"}
-
-
-# sidebar for user interaction
-with ui.sidebar(open="open"):
-    ui.h2("Sidebar")
-    ui.input_selectize(
-        "selected_attribute",
-        "Select Plotly Attribute",
-        ["bill_length_mm", "bill_depth_mm", "flipper_length_mm", "body_mass_g"],
-    )
-
-    # Create a numeric input for the number of Plotly histogram bins
-    ui.input_numeric("plotly_bin_count", "Number of plotly bins", 30)
-
-    # Creates slider input for Seaborn bins
-    ui.input_slider(
-        "seaborn_bin_slider",
-        "Number of Bins",
-        1,
-        50,
-        10,
-    )
-
-    # Use ui.input_checkbox_group() to create a checkbox group input to filter the species
-    ui.input_checkbox_group(
-        "selected_species_list",
-        "Species in Scatterplot",
-        ["Adelie", "Gentoo", "Chinstrap"],
-        selected=["Adelie"],
-        inline=True,
-    )
-
-    # Use ui.input_checkbox_group() to create a checkbox group input to filter the islands
-    ui.input_checkbox_group(
-        "selected_island_list",
-        "Islands in Graphs",
-        ["Torgersen", "Biscoe", "Dream"],
-        selected=["Torgersen", "Biscoe", "Dream"],
-        inline=True,
-    )
-
-# Use ui.hr() to add a horizontal rule to the sidebar
-ui.hr()
-
-# Use ui.a() to add a hyperlink to the sidebar
-ui.a(
-    "JBTallgrass GitHub",
-    href="https://github.com/JBtallgrass/cintel-02-data",
-    target="_blank",
-)
-
-# Data table showing the penguin dataset Include 2 cards with a table and a grid
-with ui.layout_columns():
-    with ui.card(full_screen=True):  # Full screen option
-        ui.h3("Penguins Data Table")
-
-        @render.data_frame
-        def render_penguins_table():
-            return render.DataTable(filtered_data())
-
-# Create data grid
-    with ui.card(full_screen=True):
-        ui.h3("Penguins Data Grid")
-
-        @render.data_frame
-        def render_penguins_grid():
-            return render.DataGrid(filtered_data())
-
-
-# Use ui.hr() to add a horizontal rule to the sidebar
-ui.hr()
-
-# Creates a Plotly Histogram showing all species
-with ui.layout_columns():
-    with ui.card(full_screen=True):
-        ui.h3("All Species Histogram-Plotly")
-
-        @render_plotly
-        def plotly_histogram():
-            return px.histogram(
-            filtered_data(),
-            x="species",
-            color="species",
-            color_discrete_map=color_map,
-            )
-
-    with ui.card(full_screen=True):
-        ui.h3("All Species ScatterPlot-plotly")
-
-        @render_plotly
-        def plotly_scatterplot():
-            return px.scatter(filtered_data(),
-                title="All Species ScatterPlot-plotly",
-                x="body_mass_g",
-                y="bill_length_mm",
-                color="species",
-                symbol="species",
-                color_discrete_map=color_map,
-            )
-    # Creates a Seaborn Histogram showing all species
-
-    with ui.card(full_screen=True):
-        ui.card_header("Seaborn Histogram")
-
-        palette = sns.color_palette("Set3")  # Choose a palette with 3 colors
-
-        @render.plot(alt="Seaborn Histogram")
-        def seaborn_histogram():
-          histplot = sns.histplot(filtered_data(), x="body_mass_g", bins=input.seaborn_bin_count(), hue="species", palette=palette)
-          histplot.set_title("Palmer Penguins")
-          histplot.set_xlabel("Body Mass (g)")  # Set x-axis label
-          histplot.set_ylabel("Count")  # Set y-axis label
-          return histplot
-     
-
-    with ui.card(full_screen=True):
-        ui.h3("Penguin Population by Island")
-
-        @render_plotly()
-        def island_population_chart():
-            filtered = filtered_data()
-            island_counts = filtered["island"].value_counts().reset_index()
-            island_counts.columns = ["island", "count"]
-            return px.bar(
-                island_counts,
-                x="island",
-                y="count",
-                title="Penguin Population by Island",
-                labels={"count": "Number of Penguins"},
-                color="island",
-                color_discrete_map=color_map,
-            )
-
-    # Creates a Plotly Boxplot showing all species and islands
-    with ui.card(full_screen=True):
-        ui.card_header("Plotly Boxplot: Species")
-
-        @render_plotly
-        def plotly_boxplot():
-            return px.box(
-                filtered_data(),
-                x="species",
-                y=input.selected_attribute(),
-                color="island",  # Add a color parameter to differentiate boxplots by island
-                title="Penguins Boxplot",
-                labels={
-                    "species": "Species",
-                    input.selected_attribute(): input.selected_attribute()
-                    .replace("_", " ")
-                    .title(),
-                },
-            )
-
-
-# --------------------------------------------------------
-# Reactive calculations and effects
-# --------------------------------------------------------
-
-# Add a reactive calculation to filter the data
-# By decorating the function with @reactive, we can use the function to filter the data
-# The function will be called whenever an input functions used to generate that output changes.
-# Any output that depends on the reactive function (e.g., filtered_data()) will be updated when the data changes.
-
-
-@reactive.calc
-def filtered_data():
-    return penguins_df[
-        (penguins_df["species"].isin(input.selected_species_list()))
-        & (penguins_df["island"].isin(input.selected_islands()))
-    ]
+appdirs==1.4.4
+asgiref==3.7.2
+async-lru==2.0.4
+attrs==23.2.0
+Babel==2.14.0
+blinker==1.7.0
+certifi==2024.2.2
+charset-normalizer==3.3.2
+colorama==0.4.6
+cycler==0.12.1
+dash-core-components==2.0.0
+dash-html-components==2.0.0
+dash-table==5.0.0
+debugpy==1.8.1
+decorator==5.1.1
+defusedxml==0.7.1
+executing==2.0.1
+fastjsonschema==2.19.1
+fonttools==4.50.0
+fqdn==1.5.1
+future==1.0.0
+h11==0.14.0
+idna==3.6
+itsdangerous==2.1.2
+Jinja2==3.1.3
+joblib==1.3.2
+json5==0.9.24
+jsonpointer==2.4
+jupyter_core==5.7.2
+jupyterlab_pygments==0.3.0
+jupyterlab_widgets==3.0.10
+kiwisolver==1.4.5
+linkify-it-py==2.0.3
+lzstring==1.0.4
+markdown-it-py==3.0.0
+MarkupSafe==2.1.5
+matplotlib-inline==0.1.6
+mdurl==0.1.2
+mistune==3.0.2
+nest-asyncio==1.6.0
+numpy==1.26.4
+overrides==7.7.0
+packaging==24.0
+pandocfilters==1.5.1
+parso==0.8.3
+pillow==10.2.0
+platformdirs==4.2.0
+plotly==5.20.0
+prometheus_client==0.20.0
+prompt-toolkit==3.0.36
+psutil==5.9.8
+pure-eval==0.2.2
+pyarrow==15.0.2
+pycparser==2.21
+Pygments==2.17.2
+pyparsing==3.1.2
+python-dateutil==2.9.0.post0
+python-json-logger==2.0.7
+python-multipart==0.0.9
+pytz==2024.1
+pywin32==306
+pywinpty==2.0.13
+PyYAML==6.0.1
+pyzmq==25.1.2
+questionary==2.0.1
+referencing==0.34.0
+requests==2.31.0
+retrying==1.3.4
+rfc3339-validator==0.1.4
+rfc3986-validator==0.1.1
+rpds-py==0.18.0
+scipy==1.12.0
+Send2Trash==1.8.2
+setuptools==69.2.0
+six==1.16.0
+sniffio==1.3.1
+soupsieve==2.5
+tenacity==8.2.3
+terminado==0.18.1
+threadpoolctl==3.3.0
+tinycss2==1.2.1
+toolz==0.12.1
+tornado==6.4
+traitlets==5.14.2
+types-python-dateutil==2.9.0.20240316
+typing_extensions==4.10.0
+tzdata==2024.1
+uc-micro-py==1.0.3
+uri-template==1.3.0
+urllib3==2.2.1
+wcwidth==0.2.13
+webcolors==1.13
+webencodings==0.5.1
+websocket-client==1.7.0
+websockets==12.0
+Werkzeug==3.0.1
+widgetsnbextension==4.0.10
+xyzservices==2023.10.1
+zipp==3.18.1
+faicons
+palmerpenguins
+pandas
+pyarrow
+plotly
+seaborn
+shiny
+shinylive
+shinywidgets
