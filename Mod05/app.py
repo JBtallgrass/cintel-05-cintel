@@ -12,10 +12,15 @@ from shinywidgets import render_plotly
 from scipy import stats
 from dotenv import load_dotenv
 import os
+
+#---------------------------------------------
+# PROJECT ENHANCEMENTS- Using AI Asst to explore and discover
+# modifications to the MOD 5 Project
 #---------------------------------------------
 # Load environment variables from .env file
+# OpenWeather API key is stored in gitignore
 load_dotenv()
-#--------------------------------------------
+
 # API Key and Configuration
 API_KEY = "OPENWEATHER_API_KEY"
 
