@@ -11,10 +11,6 @@ import plotly.express as px
 from shinywidgets import render_plotly, render_widget
 from scipy import stats
 from dotenv import load_dotenv
-import os
-import requests
-from ipyleaflet import Map 
-
 #---------------------------------------------
 # PROJECT ENHANCEMENTS- Using AI Asst to explore and discover
 # modifications to the MOD 5 Project
@@ -24,9 +20,9 @@ from ipyleaflet import Map
 load_dotenv()
 
 # API Key and Configuration
-API_KEY = "OPENWEATHER_API_KEY"
+# API_KEY = "OPENWEATHER_API_KEY"
 
-def fetch_api_data():
+# def fetch_api_data():
     # Use your API key here to fetch data
     # This is just a placeholder function
     pass
@@ -36,25 +32,25 @@ def fetch_api_data():
 # --------------------------------------------
 
 # https://fontawesome.com/v4/cheatsheet/
-from faicons import icon_svg
+    from faicons import icon_svg
 
 # --------------------------------------------
 # Shiny EXPRESS VERSION
 # --------------------------------------------
 from ipyleaflet import Map  
 
-ui.h2("An ipyleaflet Map")
+ui.h2("Kansas City Weather: Live data simulation")
 
 @render_widget  
 def map():
-    return Map(center=(39.0997, -94.5786), zoom=10)
+    return Map(center=(39.0997, -94.5786), zoom=10, width="100%", height="400px")
 # --------------------------------------------
 # First, set a constant UPDATE INTERVAL for all live data
 # Constants are usually defined in uppercase letters
 # Use a type hint to make it clear that it's an integer (: int)
 # --------------------------------------------
 
-UPDATE_INTERVAL_SECS: int = 3
+UPDATE_INTERVAL_SECS: int = 1
 
 # --------------------------------------------
 # Initialize a REACTIVE VALUE with a common data structure
@@ -63,7 +59,7 @@ UPDATE_INTERVAL_SECS: int = 3
 # This reactive value is a wrapper around a DEQUE of readings
 # --------------------------------------------
 
-DEQUE_SIZE: int = 5
+DEQUE_SIZE: int = 15
 reactive_value_wrapper = reactive.value(deque(maxlen=DEQUE_SIZE))
 
 # --------------------------------------------
@@ -82,7 +78,7 @@ def reactive_calc_combined():
     reactive.invalidate_later(UPDATE_INTERVAL_SECS)
 
     # Data generation logic
-    temp = round(random.uniform(-18, -16), 1)
+    temp = round(random.uniform(7, 19), 1)
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     new_dictionary_entry = {"temp":temp, "timestamp":timestamp}
 
@@ -101,37 +97,22 @@ def reactive_calc_combined():
     # Return a tuple with everything we need
     # Every time we call this function, we'll get all these values
     return deque_snapshot, df, latest_dictionary_entry
-"""
-@reactive.calc()
-def reactive_calc_combined():
-    reactive.invalidate_later(UPDATE_INTERVAL_SECS)
-    temp_celsius = round(random.uniform(-18, -16), 1)
-    temp_fahrenheit = round((temp_celsius * 9/5) + 32, 1)
-    timestamp_local = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    timestamp_gmt = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S GMT")
-    return {
-        "temp_celsius": temp_celsius,
-        "temp_fahrenheit": temp_fahrenheit,
-        "timestamp_local": timestamp_local,
-        "timestamp_gmt": timestamp_gmt
-    }
-"""
 
 
 # Define the Shiny UI Page layout
 # Call the ui.page_opts() function
 # Set title to a string in quotes that will appear at the top
 # Set fillable to True to use the whole page width for the UI
-ui.page_opts(title="PyShiny Express: Live Data Example", fillable=True)
+ui.page_opts(title="PyShiny: Live Data Example", fillable=True)
 
 # Sidebar is typically used for user interaction/information
 # Note the with statement to create the sidebar followed by a colon
 # Everything in the sidebar is indented consistently
 with ui.sidebar(open="open"):
 
-    ui.h2("Antarctic Explorer", class_="text-center")
+    ui.h2("Kansas City Weather", class_="text-center")
     ui.p(
-        "A demonstration of real-time temperature readings in Antarctica.",
+        "A demonstration of real-time temperature readings in the Kansas City Metro Area.",
         class_="text-center",
     )
     ui.hr()
@@ -154,6 +135,14 @@ with ui.sidebar(open="open"):
     )
 
 # In Shiny Express, everything not in the sidebar is in the main panel
+with ui.layout_columns():
+    with ui.columns(6):  # Adjust the column width as needed for other content
+        # Put other UI elements here
+        
+        with ui.columns(6):  # Adjust the column width as needed for the map
+            @render_widget  
+            def map():
+                return Map(center=(39.0997, -94.5786), zoom=10, height='600px', width='100%')  # Set a specific pixel height
 
 with ui.layout_columns():
     with ui.value_box(
@@ -173,7 +162,7 @@ with ui.layout_columns():
 
   
 
-    with ui.card(full_screen=True):
+    with ui.card(full_screen=True, height="800px"):
         ui.card_header("Current Date and Time")
 
         @render.text
@@ -184,7 +173,7 @@ with ui.layout_columns():
 
 
 #with ui.card(full_screen=True, min_height="40%"):
-with ui.card(full_screen=True):
+with ui.card(full_screen=True, height="800px"):
     ui.card_header("Most Recent Readings")
 
     @render.data_frame
@@ -192,7 +181,7 @@ with ui.card(full_screen=True):
         """Get the latest reading and return a dataframe with current readings"""
         deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
         pd.set_option('display.width', None)        # Use maximum width
-        return render.DataGrid( df,width="100%")
+        return render.DataGrid( df,width="100%", height="100%")
 
 with ui.card():
     ui.card_header("Chart with Current Trend")
