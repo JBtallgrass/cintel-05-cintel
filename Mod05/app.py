@@ -1,4 +1,3 @@
-
 # --------------------------------------------
 # Imports at the top - PyShiny EXPRESS VERSION
 # --------------------------------------------
@@ -20,22 +19,16 @@ from scipy import stats
 from faicons import icon_svg
 
 # --------------------------------------------
-# Shiny EXPRESS VERSION
+# Map Enhancement
 # --------------------------------------------
 from ipyleaflet import Map  
-
-ui.h2("Kansas City Weather: Live data simulation")
-
-@render_widget  
-def map():
-    return Map(center=(39.0997, -94.5786), zoom=10, width="100%", height="400px")
-# --------------------------------------------
+# ---------------------------------------------
 # First, set a constant UPDATE INTERVAL for all live data
 # Constants are usually defined in uppercase letters
 # Use a type hint to make it clear that it's an integer (: int)
 # --------------------------------------------
 
-UPDATE_INTERVAL_SECS: int = 1
+UPDATE_INTERVAL_SECS: int = 3
 
 # --------------------------------------------
 # Initialize a REACTIVE VALUE with a common data structure
@@ -44,7 +37,7 @@ UPDATE_INTERVAL_SECS: int = 1
 # This reactive value is a wrapper around a DEQUE of readings
 # --------------------------------------------
 
-DEQUE_SIZE: int = 15
+DEQUE_SIZE: int = 5
 reactive_value_wrapper = reactive.value(deque(maxlen=DEQUE_SIZE))
 
 # --------------------------------------------
@@ -118,18 +111,14 @@ with ui.sidebar(open="open"):
         href="hhttps://shiny.posit.co/blog/posts/shiny-express/",
         target="_blank",
     )
+    # In Shiny Express, everything not in the sidebar is in the main panel
 
-# In Shiny Express, everything not in the sidebar is in the main panel
 with ui.layout_columns():
-    with ui.columns(6):  # Adjust the column width as needed for other content
-        # Put other UI elements here
+    with ui.h2("Kansas City Weather: Live data simulation"):
+        @render_widget  
+        def map(width="50%", height="50%"):
+            return Map(center=(39.0997, -94.5786), zoom=10,)
         
-        with ui.columns(6):  # Adjust the column width as needed for the map
-            @render_widget  
-            def map():
-                return Map(center=(39.0997, -94.5786), zoom=10, height='600px', width='100%')  # Set a specific pixel height
-
-with ui.layout_columns():
     with ui.value_box(
         showcase=icon_svg("sun"),
         theme="bg-gradient-blue-purple",
@@ -146,8 +135,7 @@ with ui.layout_columns():
         "warmer than usual"
 
   
-
-    with ui.card(full_screen=True, height="800px"):
+    with ui.card(full_screen=True):
         ui.card_header("Current Date and Time")
 
         @render.text
@@ -158,15 +146,15 @@ with ui.layout_columns():
 
 
 #with ui.card(full_screen=True, min_height="40%"):
-with ui.card(full_screen=True, height="800px"):
-    ui.card_header("Most Recent Readings")
+    with ui.card(full_screen=True):
+        ui.card_header("Most Recent Readings")
 
-    @render.data_frame
-    def display_df():
-        """Get the latest reading and return a dataframe with current readings"""
-        deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
-        pd.set_option('display.width', None)        # Use maximum width
-        return render.DataGrid( df,width="100%", height="100%")
+        @render.data_frame
+        def display_df():
+            """Get the latest reading and return a dataframe with current readings"""
+            deque_snapshot, df, latest_dictionary_entry = reactive_calc_combined()
+            pd.set_option('display.width', None)        # Use maximum width
+            return render.DataGrid( df,width="100%")
 
 with ui.card():
     ui.card_header("Chart with Current Trend")
@@ -211,4 +199,4 @@ with ui.card():
             # Update layout as needed to customize further
             fig.update_layout(xaxis_title="Time",yaxis_title="Temperature (°C)")
 
-        return fig
+            return fig
