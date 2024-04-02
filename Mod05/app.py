@@ -102,16 +102,10 @@ with ui.sidebar(open="open"):
     )
     ui.a(
         "GitHub App",
-        href="",
+        href="https://jbtallgrass.github.io/cintel-05-cintel/",
         target="_blank",
     )
-    ui.a("PyShiny", href="https://shiny.posit.co/py/", target="_blank")
-    ui.a(
-        "PyShiny Express",
-        href="hhttps://shiny.posit.co/blog/posts/shiny-express/",
-        target="_blank",
-    )
-    # In Shiny Express, everything not in the sidebar is in the main panel
+       # In Shiny Express, everything not in the sidebar is in the main panel
 
 with ui.layout_columns():
     with ui.h2("Kansas City Weather: Live data simulation"):
