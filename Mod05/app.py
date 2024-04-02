@@ -1,3 +1,4 @@
+
 # --------------------------------------------
 # Imports at the top - PyShiny EXPRESS VERSION
 # --------------------------------------------
@@ -10,29 +11,13 @@ import pandas as pd
 import plotly.express as px
 from shinywidgets import render_plotly, render_widget
 from scipy import stats
-from dotenv import load_dotenv
+
 #---------------------------------------------
 # PROJECT ENHANCEMENTS- Using AI Asst to explore and discover
 # modifications to the MOD 5 Project
 #---------------------------------------------
-# Load environment variables from .env file
-# OpenWeather API key is stored in gitignore
-load_dotenv()
-
-# API Key and Configuration
-# API_KEY = "OPENWEATHER_API_KEY"
-
-# def fetch_api_data():
-    # Use your API key here to fetch data
-    # This is just a placeholder function
-    pass
-
-# --------------------------------------------
-# Import icons as you like
-# --------------------------------------------
-
 # https://fontawesome.com/v4/cheatsheet/
-    from faicons import icon_svg
+from faicons import icon_svg
 
 # --------------------------------------------
 # Shiny EXPRESS VERSION
@@ -119,7 +104,7 @@ with ui.sidebar(open="open"):
     ui.h6("Links:")
     ui.a(
         "GitHub Source",
-        href="",
+        href="https://github.com/JBtallgrass/cintel-05-cintel/blob/main/Mod05/app.py",
         target="_blank",
     )
     ui.a(
